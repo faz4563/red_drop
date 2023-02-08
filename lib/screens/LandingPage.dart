@@ -3,19 +3,19 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class LandingPage extends StatefulWidget {
-  const LandingPage({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LandingPage> createState() => _LandingPageState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LandingPageState extends State<LandingPage> {
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 365.w,
-      height: 667.h,
+      // width: 365.w,
+      // height: 667.h,
       child: const Center(
         child: Text("Work Started"),
       ),
