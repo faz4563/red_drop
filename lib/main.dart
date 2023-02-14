@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:red_drop/screens/LandingPage.dart';
+import 'package:red_drop/screens/LoginPage.dart';
 import 'package:red_drop/screens/splashScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,7 +20,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool skippedIntro = false;
+  String? skippedIntro;
 
   @override
   void initState() {
@@ -29,21 +29,31 @@ class _MyAppState extends State<MyApp> {
   }
 
   init() async {
-    Future skippedIntro = LocalStorage.getBooltoLocalStorage("skippedIntro");
+    gettingSkippedData();
+  }
+
+  gettingSkippedData() async {
+    final prefs = await SharedPreferences.getInstance();
+    skippedIntro = prefs.getString("skippedIntro");
+    setState(() {});
+    print(skippedIntro);
   }
 
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(365, 667),
+      designSize: const Size(365, 667),
       builder: (context, child) => MaterialApp(
         title: 'RED DROP',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home:
-            skippedIntro == false ? const IntroScreens() : const LoginScreen(),
+        home: skippedIntro == "false"
+            ? const IntroScreens()
+            : skippedIntro == null
+                ? const IntroScreens()
+                : const LoginScreen(),
       ),
     );
   }
