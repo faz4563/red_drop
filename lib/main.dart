@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:red_drop/screens/LoginPage.dart';
+import 'package:red_drop/screens/LandingPage.dart';
 import 'package:red_drop/screens/splashScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
             ? const IntroScreens()
             : skippedIntro == null
                 ? const IntroScreens()
-                : const LoginScreen(),
+                : const LandingPage(),
       ),
     );
   }

@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:red_drop/controllers/localStorageControllers.dart';
-import 'package:red_drop/screens/LoginPage.dart';
+import 'package:red_drop/screens/LandingPage.dart';
 import 'package:red_drop/utils/images.dart';
 import 'package:red_drop/utils/strings.dart';
 
@@ -104,7 +104,7 @@ class Banner1 extends StatelessWidget {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
+                                builder: (context) => const LandingPage(),
                               ));
                         },
                         child: const Text(
@@ -211,7 +211,7 @@ class Banner2 extends StatelessWidget {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
+                                builder: (context) => const LandingPage(),
                               ));
                         },
                         child: const Text(
@@ -294,7 +294,7 @@ class Banner3 extends StatelessWidget {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
+                              builder: (context) => const LandingPage(),
                             ));
                       },
                       style: ElevatedButton.styleFrom(
@@ -318,7 +318,7 @@ class Banner3 extends StatelessWidget {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
+                                builder: (context) => const LandingPage(),
                               ));
                         },
                         child: const Text(
