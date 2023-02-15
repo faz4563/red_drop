@@ -6,8 +6,6 @@ import 'package:red_drop/screens/LoginPage.dart';
 import 'package:red_drop/screens/splashScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'controllers/localStorageControllers.dart';
-
 void main() async {
   runApp(const MyApp());
 }
