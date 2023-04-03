@@ -1,11 +1,9 @@
 // ignore_for_file: file_names, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:red_drop/screens/signUp.dart';
+import 'package:red_drop/screens/signUp/signUp.dart';
 import 'package:red_drop/utils/images.dart';
-
-import 'signIn.dart';
+import 'signIn/signIn.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});

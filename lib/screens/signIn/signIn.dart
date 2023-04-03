@@ -1,4 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:red_drop/controllers/ApiConstants.dart';
+import 'package:red_drop/controllers/ApiController.dart';
+import 'package:red_drop/models/loginModel.dart';
+import 'package:red_drop/screens/LandingPage.dart';
+import 'package:red_drop/screens/homeScreen/homePage.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -9,6 +16,34 @@ class SignIn extends StatefulWidget {
 
 TextEditingController usernameController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
+LoginModel loggedInDetails = LoginModel();
+
+login(context) async {
+  var data = {
+    "username": usernameController.text,
+    "password": passwordController.text
+  };
+  var response =
+      await ApiController.post(ApiConstants().loginApi, jsonEncode(data));
+  loggedInDetails = LoginModel.fromJson(response);
+
+  if (loggedInDetails.flag == "T") {
+    usernameController.clear();
+    passwordController.clear();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(loggedInDetails.status.toString()),
+    ));
+    return Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ));
+  } else {
+    return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(loggedInDetails.status.toString()),
+    ));
+  }
+}
 
 class _SignInState extends State<SignIn> {
   @override
@@ -53,7 +88,9 @@ class _SignInState extends State<SignIn> {
               height: 20,
             ),
             ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  login(context);
+                },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
