@@ -11,32 +11,31 @@ from bson import json_util
 app = Flask(__name__)
 client = MongoClient("mongodb://localhost:27017/")
 mydatabase = client["donors_data"]
-mycollection = mydatabase["donor_details"]
+donorDetails = mydatabase["donor_details"]
+userDetails = mydatabase["red_drop_users"]
 
 
 def rep(__self__):
-    mycollection.__format__
+    donorDetails.__format__
 
 
 @app.route("/register_user", methods=['POST'])
 def registerUser():
     try:
         data = json.loads(request.data)
-        username = data['username']
+        name = data['name']
         email = data['email']
-        password = data['password']
         phone = data["phone"]
-        bloodGroup = data["bloodGroup"]
-        dup_data = mycollection.distinct("phone")
+        password = data['password']
+        # bloodGroup = data["bloodGroup"]
+        dup_data = userDetails.distinct("phone")
         print(dup_data)
         if (phone not in dup_data):
-            status = mycollection.insert_one({
-                "name": username,
-                "username": username,
+            status = userDetails.insert_one({
+                "name": name,
                 "email": email,
-                "password": password,
                 "phone": phone,
-                "bloodGroup": bloodGroup,
+                "password": password,
             })
             print(status)
             return dumps({
@@ -54,7 +53,7 @@ def login():
         data = json.loads(request.data)
         username = data['username']
         password = data['password']
-        x = mycollection.find_one({"username": username})
+        x = userDetails.find_one({"username": username})
         
         if (x and x['password'] == password):
             return dumps({
@@ -74,7 +73,7 @@ def getBloodList():
     
     try:
 
-        blood_groups = mycollection.find({"bloodGroup": {"$exists": True}})
+        blood_groups = donorDetails.find({"bloodGroup": {"$exists": True}})
         return dumps(blood_groups)
 
         # blood_groups = [doc["_id"] for doc in mycollection.aggregate(pipeline)]
@@ -265,4 +264,4 @@ def home():
 
 
 if (__name__ == "__main__"):
-    app.run(debug=True, host='192.168.1.3', port=5500)
+    app.run(debug=True, host='192.168.1.93', port=5500)
