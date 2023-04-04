@@ -1,6 +1,15 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, file_names
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:red_drop/controllers/ApiController.dart';
+import 'package:red_drop/screens/LandingPage.dart';
+import 'package:red_drop/screens/signIn/signIn.dart';
+
+import '../../controllers/ApiConstants.dart';
+import '../../models/loginModel.dart';
+import '../../models/signupModel.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -9,10 +18,41 @@ class SignUp extends StatefulWidget {
   State<SignUp> createState() => _SignUpState();
 }
 
-TextEditingController usernameController = TextEditingController();
-TextEditingController email_mobile_number_Controller = TextEditingController();
+TextEditingController nameController = TextEditingController();
+TextEditingController emailController = TextEditingController();
+TextEditingController phoneController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
-TextEditingController confirmPasswordController = TextEditingController();
+SignUpModel registeredDetails = SignUpModel();
+signUp(context, name, email, phone, password) async {
+  var data = {
+    "name": name,
+    "email": email,
+    "phone": phone,
+    "password": password
+  };
+  var response =
+      await ApiController.post(ApiConstants().registerApi, jsonEncode(data));
+  registeredDetails = SignUpModel.fromJson(response);
+
+  if (registeredDetails.flag == "T") {
+    nameController.clear();
+    emailController.clear();
+    phoneController.clear();
+    passwordController.clear();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(registeredDetails.status.toString()),
+    ));
+    return Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LandingPage(),
+        ));
+  } else {
+    return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(registeredDetails.status.toString()),
+    ));
+  }
+}
 
 class _SignUpState extends State<SignUp> {
   @override
@@ -33,16 +73,22 @@ class _SignUpState extends State<SignUp> {
               height: 10,
             ),
             TextFormField(
-              decoration: const InputDecoration(label: Text("User Name")),
-              controller: usernameController,
+              decoration: const InputDecoration(label: Text("Name")),
+              controller: nameController,
             ),
             const SizedBox(
               height: 10,
             ),
             TextFormField(
-              decoration:
-                  const InputDecoration(label: Text("Email/Phone number")),
-              controller: email_mobile_number_Controller,
+              decoration: const InputDecoration(label: Text("Email")),
+              controller: emailController,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(label: Text("Phone number")),
+              controller: phoneController,
             ),
             const SizedBox(
               height: 10,
@@ -52,18 +98,17 @@ class _SignUpState extends State<SignUp> {
               controller: passwordController,
             ),
             const SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              decoration:
-                  const InputDecoration(label: Text("Confirm Password")),
-              controller: confirmPasswordController,
-            ),
-            const SizedBox(
               height: 20,
             ),
             ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  signUp(
+                      context,
+                      nameController.text.trim(),
+                      emailController.text.trim(),
+                      phoneController.text.trim(),
+                      passwordController.text.trim());
+                },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
