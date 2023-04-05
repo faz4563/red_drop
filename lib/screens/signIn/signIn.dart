@@ -6,6 +6,9 @@ import 'package:red_drop/controllers/ApiController.dart';
 import 'package:red_drop/models/loginModel.dart';
 import 'package:red_drop/screens/LandingPage.dart';
 import 'package:red_drop/screens/homeScreen/homePage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../controllers/localStorageControllers.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -20,11 +23,11 @@ LoginModel loggedInDetails = LoginModel();
 
 login(context) async {
   var data = {
-    "username": usernameController.text,
+    "name": usernameController.text,
     "password": passwordController.text
   };
   var response =
-      await ApiController.post(ApiConstants().loginApi, jsonEncode(data));
+      await ApiController.post(ApiConstants.loginApi, jsonEncode(data));
   loggedInDetails = LoginModel.fromJson(response);
 
   if (loggedInDetails.flag == "T") {
@@ -33,6 +36,7 @@ login(context) async {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(loggedInDetails.status.toString()),
     ));
+    LocalStorage.saveStringtoLocalStorage("loggedIn", "true");
     return Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -46,6 +50,12 @@ login(context) async {
 }
 
 class _SignInState extends State<SignIn> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;

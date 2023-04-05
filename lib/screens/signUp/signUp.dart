@@ -31,7 +31,7 @@ signUp(context, name, email, phone, password) async {
     "password": password
   };
   var response =
-      await ApiController.post(ApiConstants().registerApi, jsonEncode(data));
+      await ApiController.post(ApiConstants.registerUserApi, jsonEncode(data));
   registeredDetails = SignUpModel.fromJson(response);
 
   if (registeredDetails.flag == "T") {

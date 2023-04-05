@@ -7,75 +7,144 @@ from bson.json_util import dumps
 import json
 from pymongo import MongoClient
 from bson import json_util
+from flask import Flask, make_response
+from flask_cors import CORS
 
 app = Flask(__name__)
 client = MongoClient("mongodb://localhost:27017/")
 mydatabase = client["donors_data"]
 donorDetails = mydatabase["donor_details"]
 userDetails = mydatabase["red_drop_users"]
+CORS(app)
 
 
 def rep(__self__):
     donorDetails.__format__
 
 
-@app.route("/register_user", methods=['POST'])
+@app.route("/register_user", methods=["POST"])
 def registerUser():
     try:
         data = json.loads(request.data)
-        name = data['name']
-        email = data['email']
+        name = data["name"]
+        email = data["email"]
         phone = data["phone"]
-        password = data['password']
+        password = data["password"]
         # bloodGroup = data["bloodGroup"]
         dup_data = userDetails.distinct("phone")
         print(dup_data)
-        if (phone not in dup_data):
-            status = userDetails.insert_one({
-                "name": name,
-                "email": email,
-                "phone": phone,
-                "password": password,
-            })
+        if phone not in dup_data:
+            status = userDetails.insert_one(
+                {
+                    "name": name,
+                    "email": email,
+                    "phone": phone,
+                    "password": password,
+                }
+            )
             print(status)
-            return dumps({
-                'Flag': 'T',
-                'Status': 'User Created Successfully'})
+            responseData = {"Flag": "T", "Status": "User Created Successfully"}
+
+            response = make_response(responseData)
+            response.headers["Access-Control-Allow-Origin"] = "*"
+            response.headers[
+                "Access-Control-Allow-Methods"
+            ] = "GET, POST, PUT, DELETE, OPTIONS"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+
+            return dumps(responseData)
         else:
-            return dumps({'Flag': 'F','Status': 'User Already Exists'})
+            return dumps({"Flag": "F", "Status": "User Already Exists"})
     except Exception as e:
-        return dumps({'error': str(e)})
+        return dumps({"error": str(e)})
+    
+
+@app.route("/register_donor", methods=["POST"])
+def registerDonor():
+    try:
+        data = json.loads(request.data)
+        name = data["name"]
+        age = data["age"]
+        bloodGroup = data["bloodGroup"]
+        address = data["address"]
+        # bloodGroup = data["bloodGroup"]
+        dup_data = donorDetails.distinct("name")
+        print(dup_data)
+        if name not in dup_data:
+            status = donorDetails.insert_one(
+                {
+                    "name": name,
+                    "age": age,
+                    "bloodGroup": bloodGroup,
+                    "address": address,
+                }
+            )
+            print(status)
+            responseData = {"Flag": "T", "Status": "Donor Created Successfully"}
+
+            response = make_response(responseData)
+            response.headers["Access-Control-Allow-Origin"] = "*"
+            response.headers[
+                "Access-Control-Allow-Methods"
+            ] = "GET, POST, PUT, DELETE, OPTIONS"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+
+            return dumps(responseData)
+        else:
+            return dumps({"Flag": "F", "Status": "Donor Already Exists"})
+    except Exception as e:
+        return dumps({"error": str(e)})
 
 
-@app.route("/login", methods=['POST'])
+@app.route("/login", methods=["POST"])
 def login():
     try:
         data = json.loads(request.data)
-        username = data['username']
-        password = data['password']
-        x = userDetails.find_one({"username": username})
-        
-        if (x and x['password'] == password):
-            return dumps({
-                'Flag': 'T',
-                'Status': 'Logged In Successfully'
-                })
+        name = data["name"]
+        password = data["password"]
+        x = userDetails.find_one({"name": name})
+
+        if x and x["password"] == password:
+            responseData = {"Flag": "T", "Status": "Logged In Successfully"}
+            response = make_response(responseData)
+            response.headers["Access-Control-Allow-Origin"] = "*"
+            response.headers[
+                "Access-Control-Allow-Methods"
+            ] = "GET, POST, PUT, DELETE, OPTIONS"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+            return dumps(responseData)
         else:
-            return dumps({'Flag': 'F','Status': 'User Detail Not Found'})
+            return dumps({"Flag": "F", "Status": "User Detail Not Found"})
+
     except Exception as e:
-        return dumps({'error': str(e)})
+        return dumps({"error": str(e)})
 
 
-@app.route("/get_blood_list", methods=['GET'])
+@app.route("/get_blood_list", methods=["GET"])
 def getBloodList():
-    # data = json.loads(request.data)
-    # bloodGroup = data["bloodGroup"]
-    
+    bloodGroupList = []
     try:
+        blood_groups = donorDetails.find()
 
-        blood_groups = donorDetails.find({"bloodGroup": {"$exists": True}})
-        return dumps(blood_groups)
-
+        data = json.loads(dumps(blood_groups))
+        # return dumps(list(blood_groups))
+        for group in data:
+            format = {
+                "name": group["name"],
+                "age": group["age"],
+                "bloodGroup": group["bloodGroup"],
+                "address": group["address"],
+            }
+            bloodGroupList.append(format)
+            print((bloodGroupList))
+            responseData = {"flag": "T", "bloodGroupList": bloodGroupList}
+            response = make_response(responseData)
+            response.headers["Access-Control-Allow-Origin"] = "*"
+            response.headers[
+                "Access-Control-Allow-Methods"
+            ] = "GET, POST, PUT, DELETE, OPTIONS"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        return dumps(responseData)
         # blood_groups = [doc["_id"] for doc in mycollection.aggregate(pipeline)]
         # db_names = client.list_database_names()
 
@@ -87,7 +156,7 @@ def getBloodList():
         #         blood_groups.update(collection.distinct(key="bloodgroup"))
 
     except Exception as e:
-        return dumps({'error': str(e)})
+        return dumps({"error": str(e)})
 
 
 # def login():
@@ -263,5 +332,9 @@ def home():
     return "Welcome!"
 
 
-if (__name__ == "__main__"):
-    app.run(debug=True, host='192.168.1.93', port=5500)
+if __name__ == "__main__":
+    app.run(
+        debug=True,
+        host="192.168.1.6",
+        port=5000,
+    )
